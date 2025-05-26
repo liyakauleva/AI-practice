@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Expense Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        input[type="text"], input[type="number"] { padding: 5px; margin-right: 10px; }
+        button { padding: 8px 12px; }
+        .results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Monthly Expense Calculator</h1>
+
+<table id="expenseTable">
+    <thead>
+    <tr>
+        <th>Category</th>
+        <th>Amount ($)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Empty on startup -->
+    </tbody>
+</table>
+
+<h3>Add New Expense</h3>
+<input type="text" id="categoryInput" placeholder="Category">
+<input type="number" id="amountInput" placeholder="Amount ($)">
+<button onclick="addExpense()">Add Expense</button>
+
+<div class="results">
+    <button onclick="calculateExpenses()">Calculate</button>
+
+    <h3>Results:</h3>
+    <p id="totalAmount">Total Amount of Expenses: </p>
+    <p id="averageDaily">Average Daily Expense: </p>
+    <p id="topExpenses">Top 3 Largest Expenses: </p>
+</div>
+
+<script>
+    function addExpense() {
+        const category = document.getElementById('categoryInput').value.trim();
+        const amount = parseFloat(document.getElementById('amountInput').value);
+
+        if (category === '' || isNaN(amount) || amount <= 0) {
+            alert('Please enter a valid category and amount.');
+            return;
+        }
+
+        const table = document.getElementById('expenseTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        const categoryCell = newRow.insertCell(0);
+        const amountCell = newRow.insertCell(1);
+        categoryCell.textContent = category;
+        amountCell.textContent = amount;
+
+        document.getElementById('categoryInput').value = '';
+        document.getElementById('amountInput').value = '';
+    }
+
+    function calculateExpenses() {
+        const table = document.getElementById('expenseTable').getElementsByTagName('tbody')[0];
+        const rows = table.getElementsByTagName('tr');
+        let total = 0;
+        let expenses = [];
+
+        for (let row of rows) {
+            const category = row.cells[0].textContent;
+            const amount = parseFloat(row.cells[1].textContent);
+            total += amount;
+            expenses.push({ category, amount });
+        }
+
+        if (expenses.length === 0) {
+            document.getElementById('totalAmount').textContent = `Total Amount of Expenses: $0`;
+            document.getElementById('averageDaily').textContent = `Average Daily Expense: $0`;
+            document.getElementById('topExpenses').textContent = `Top 3 Largest Expenses: None`;
+            return;
+        }
+
+        const averageDaily = (total / 30).toFixed(2);
+
+        expenses.sort((a, b) => b.amount - a.amount);
+        const top3 = expenses.slice(0, 3).map(exp => `${exp.category} ($${exp.amount})`).join(', ');
+
+        document.getElementById('totalAmount').textContent = `Total Amount of Expenses: $${total}`;
+        document.getElementById('averageDaily').textContent = `Average Daily Expense: $${averageDaily}`;
+        document.getElementById('topExpenses').textContent = `Top 3 Largest Expenses: ${top3}`;
+    }
+</script>
+
+</body>
+</html>
